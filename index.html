@@ -61,7 +61,6 @@
   const form = document.getElementById("loveForm");
   const resultDiv = document.getElementById("result");
 
-  // Replace this with your own Google Apps Script URL
   const webhookURL = "https://script.google.com/macros/s/AKfycbxH4lcWiNdBESfYLKzOi4S93HsVDcYDsuD-4sOUHLdmrhSA1lwc3Wk2GMK1VRSpCkZkSg/exec";
 
   form.addEventListener("submit", function(e) {
@@ -69,21 +68,24 @@
 
     const yourName = document.getElementById("yourName").value.trim();
     const crushName = document.getElementById("crushName").value.trim();
-    const lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
+    const lovePercent = Math.floor(Math.random() * 51) + 50;
 
     resultDiv.innerHTML = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
 
-    // Send the prank data to Google Sheets via Apps Script
-const formData = new URLSearchParams();
-formData.append("yourName", yourName);
-formData.append("crushName", crushName);
-formData.append("lovePercent", lovePercent);
+    const formData = new URLSearchParams();
+    formData.append("yourName", yourName);
+    formData.append("crushName", crushName);
+    formData.append("lovePercent", lovePercent);
 
-fetch(webhookURL, {
-  method: "POST",
-  body: formData
-});
+    fetch(webhookURL, {
+      method: "POST",
+      body: formData
+    }).catch(err => {
+      console.error("Logging to Google Sheets failed:", err);
+    });
+  });
 </script>
+
 
 
 </body>
