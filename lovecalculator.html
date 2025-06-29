@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>❤️ Love Calculator ❤️</title>
+  <style>
+    body {
+      background: #ffe6f0;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+    h1 {
+      color: #ff3385;
+      font-size: 36px;
+    }
+    input, button {
+      font-size: 18px;
+      padding: 10px;
+      margin: 10px;
+      border: 2px solid #ff3385;
+      border-radius: 10px;
+    }
+    button {
+      background-color: #ff3385;
+      color: white;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 26px;
+      color: #cc0066;
+    }
+    #log {
+      display: none;
+      margin-top: 40px;
+      color: #555;
+    }
+    textarea {
+      width: 80%;
+      height: 200px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>❤️ Love Calculator ❤️</h1>
+
+  <form id="loveForm">
+    <input type="text" id="yourName" placeholder="Your Name" required><br>
+    <input type="text" id="crushName" placeholder="Their Name" required><br>
+    <button type="submit">Calculate Love %</button>
+  </form>
+
+  <div id="result"></div>
+
+  <div id="log">
+    <h3>💾 Prank Log (Only You Can See)</h3>
+    <textarea id="logData" readonly></textarea>
+  </div>
+
+  <script>
+    const form = document.getElementById("loveForm");
+    const resultDiv = document.getElementById("result");
+    const logDiv = document.getElementById("log");
+    const logData = document.getElementById("logData");
+
+    const logKey = "loveLog";
+
+    function loadLog() {
+      const saved = localStorage.getItem(logKey);
+      if (saved) {
+        logDiv.style.display = "block";
+        logData.value = saved;
+      }
+    }
+
+    function appendLog(entry) {
+      let existing = localStorage.getItem(logKey) || "";
+      existing += entry + "\n";
+      localStorage.setItem(logKey, existing);
+      loadLog();
+    }
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const yourName = document.getElementById("yourName").value.trim();
+      const crushName = document.getElementById("crushName").value.trim();
+      const lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
+
+      resultDiv.innerHTML = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
+
+      const timestamp = new Date().toLocaleString();
+      appendLog(`[${timestamp}] ${yourName} ❤️ ${crushName} = ${lovePercent}%`);
+    });
+
+    loadLog();
+  </script>
+
+</body>
+</html>
