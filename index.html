@@ -74,18 +74,15 @@
     resultDiv.innerHTML = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
 
     // Send the prank data to Google Sheets via Apps Script
-    fetch(webhookURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        yourName: yourName,
-        crushName: crushName,
-        lovePercent: lovePercent
-      })
-    }).catch(err => {
-      console.error("Logging to Google Sheets failed:", err);
-    });
-  });
+const formData = new URLSearchParams();
+formData.append("yourName", yourName);
+formData.append("crushName", crushName);
+formData.append("lovePercent", lovePercent);
+
+fetch(webhookURL, {
+  method: "POST",
+  body: formData
+});
 </script>
 
 
