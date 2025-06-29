@@ -80,11 +80,13 @@
     fetch(webhookURL, {
       method: "POST",
       body: formData
-    }).catch(err => {
-      console.error("Logging to Google Sheets failed:", err);
-    });
+    })
+    .then(response => response.text())
+    .then(data => console.log("✅ Logged to Sheet:", data))
+    .catch(err => console.error("❌ Logging failed:", err));
   });
 </script>
+
 
 
 
