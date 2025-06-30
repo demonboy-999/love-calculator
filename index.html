@@ -55,25 +55,33 @@
 
   <div id="result"></div>
 
+  <audio id="prankAudio">
+  <source src="https://www.myinstants.com/media/sounds/moaningboys80231890.mp3" type="audio/mpeg">
+  </audio>
+
 
 
 <script>
   const form = document.getElementById("loveForm");
   const resultDiv = document.getElementById("result");
+  const prankAudio = document.getElementById("prankAudio"); // 🎵 Reference audio
 
   const webhookURL = "https://script.google.com/macros/s/AKfycbxH4lcWiNdBESfYLKzOi4S93HsVDcYDsuD-4sOUHLdmrhSA1lwc3Wk2GMK1VRSpCkZkSg/exec";
 
   form.addEventListener("submit", function(e) {
     e.preventDefault();
 
+    // 🔊 Play moan sound
+    prankAudio.play().catch(err => {
+      console.warn("Autoplay blocked:", err);
+    });
+
     // 🔧 Raw input
     const yourNameRaw = document.getElementById("yourName").value;
     const crushNameRaw = document.getElementById("crushName").value;
 
-    // 🔧 Cleaned and normalized lowercase names
     const yourName = yourNameRaw.trim().toLowerCase().replace(/[^a-z]/g, " ");
     const crushName = crushNameRaw.trim().toLowerCase().replace(/[^a-z]/g, " ");
-
     const combinedInput = `${yourName} ${crushName}`.replace(/\s+/g, " ").trim();
 
     // ❌ Word boundary-safe blocked names
@@ -131,17 +139,14 @@
         const prankRoll = Math.random();
 
         if (prankRoll < 0.25) {
-          // GAY prank
           resultText = `💔 ${capitalizeFirstLetter(yourName)} & ${capitalizeFirstLetter(crushName)} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
           resultDiv.innerHTML = resultText;
         } else if (prankRoll < 0.5) {
-          // Porn Star prank with redirect
           resultDiv.innerHTML += `<br><br>🔍 We found something online…<br><b>Your hidden crush is a porn star.</b><br>Here’s the link: <a href="#">here</a>`;
           setTimeout(() => {
             window.location.href = "https://www.spankbang.com";
           }, 3000);
         } else {
-          // AI Analysis prank
           const prankMessages = [
             "🧬 Emotional mismatch detected. Your crush might actually prefer your best friend.",
             "🕵️‍♀️ Compatibility shows they're already in a relationship… with someone in your friend list.",
@@ -170,7 +175,6 @@
     .catch(err => console.error("❌ Logging failed:", err));
   });
 
-  // 🔠 Capitalize for display/logging
   function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
