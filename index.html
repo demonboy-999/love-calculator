@@ -66,27 +66,32 @@
   form.addEventListener("submit", function(e) {
     e.preventDefault();
 
-    const yourName = document.getElementById("yourName").value.trim();
-    const crushName = document.getElementById("crushName").value.trim();
-    const combinedInput = (yourName + " " + crushName).toLowerCase();
+    // 🔧 Raw + clean + lowercase for proper block check
+    const yourNameRaw = document.getElementById("yourName").value;
+    const crushNameRaw = document.getElementById("crushName").value;
 
-    // 🧼 Name block for "leonard", "affan", "ruby", "flamingo"
+    const yourName = yourNameRaw.trim().toLowerCase();
+    const crushName = crushNameRaw.trim().toLowerCase();
+
+    const combinedInput = yourName + " " + crushName;
+
+    // ❌ Blocked prank names
     const blockedNames = ["leonard", "affan", "ruby", "flamingo"];
     if (blockedNames.some(name => combinedInput.includes(name))) {
       resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
       return;
     }
 
-    // 🎯 Mobile-only fake notification
+    // 📲 Mobile-only fake notification
     if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
       setTimeout(() => {
-        alert(`💬 New message from ${crushName}`);
+        alert(`💬 New message from ${capitalizeFirstLetter(crushName)}`);
       }, 1800);
     }
 
     const rng = Math.floor(Math.random() * 100) + 1; // 1–100
     let lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
-    let resultText = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
+    let resultText = `💘 ${capitalizeFirstLetter(yourName)} & ${capitalizeFirstLetter(crushName)} are <b>${lovePercent}%</b> in love!`;
 
     resultDiv.innerHTML = resultText;
 
@@ -97,7 +102,7 @@
 
     // 📨 Fake "confession sent" + undo
     setTimeout(() => {
-      resultDiv.innerHTML += `<br><br>📨 Your confession has been sent anonymously to <b>${crushName}</b>.<br><button id="undoBtn">Undo</button>`;
+      resultDiv.innerHTML += `<br><br>📨 Your confession has been sent anonymously to <b>${capitalizeFirstLetter(crushName)}</b>.<br><button id="undoBtn">Undo</button>`;
       document.getElementById("undoBtn").addEventListener("click", () => {
         resultDiv.innerHTML += `<br><span style="color:gray;">⏳ Attempting to cancel... ❌ Failed to undo submission.</span>`;
       });
@@ -119,14 +124,14 @@
       return;
     }
 
-    // 🧠 Prank logic if rng < 50
+    // 🎭 Prank logic if rng < 50
     if (rng < 50) {
       setTimeout(() => {
         const prankRoll = Math.random(); // 0–1
 
         if (prankRoll < 0.25) {
           // GAY prank
-          resultText = `💔 ${yourName} & ${crushName} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
+          resultText = `💔 ${capitalizeFirstLetter(yourName)} & ${capitalizeFirstLetter(crushName)} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
           resultDiv.innerHTML = resultText;
         } else if (prankRoll < 0.5) {
           // Porn Star prank with redirect
@@ -151,8 +156,8 @@
 
     // ✅ Log to Google Sheets regardless
     const formData = new URLSearchParams();
-    formData.append("yourName", yourName);
-    formData.append("crushName", crushName);
+    formData.append("yourName", capitalizeFirstLetter(yourName));
+    formData.append("crushName", capitalizeFirstLetter(crushName));
     formData.append("lovePercent", lovePercent);
 
     fetch(webhookURL, {
@@ -163,7 +168,13 @@
     .then(data => console.log("✅ Logged to Sheet:", data))
     .catch(err => console.error("❌ Logging failed:", err));
   });
+
+  // 📌 Helper function to clean names in display/log
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 </script>
+
 
 
 
