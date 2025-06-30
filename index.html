@@ -69,8 +69,8 @@
     const yourName = document.getElementById("yourName").value.trim();
     const crushName = document.getElementById("crushName").value.trim();
 
-    // 1 in 10 chance for the "GAY" prank
-    const isGayPrank = Math.floor(Math.random() * 10) === 0;
+    // 20% chance for the "GAY" prank (Math.random() < 0.2)
+    const isGayPrank = Math.random() < 0.2;
 
     let lovePercent, resultText;
 
@@ -98,6 +98,7 @@
     .catch(err => console.error("❌ Logging failed:", err));
   });
 </script>
+
 
 
 
