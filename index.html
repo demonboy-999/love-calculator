@@ -69,47 +69,45 @@
     const yourName = document.getElementById("yourName").value.trim();
     const crushName = document.getElementById("crushName").value.trim();
 
-    // 20% chance for the "GAY!!!" message
-    const isGayPrank = Math.random() < 0.2;
-    // 20% chance for "porn star" message
-    const isPornPrank = Math.random() < 0.2;
+    // Always generate love %
+    const lovePercent = Math.floor(Math.random() * 51) + 50;
+    const resultText = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
 
-    let lovePercent, resultText;
-
-    if (isGayPrank) {
-      lovePercent = 0;
-      resultText = `💔 ${yourName} & ${crushName} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
-      showResult(resultText, yourName, crushName, lovePercent);
-      return;
-    }
-
-    // Regular love % result
-    lovePercent = Math.floor(Math.random() * 51) + 50;
-    resultText = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
-
-    // Show love result first
     resultDiv.innerHTML = resultText;
 
-    // Then after 2 seconds, do a "deeper analysis"
+    // Wait 2 seconds, then stack randomized pranks
     setTimeout(() => {
-      let analysisText = "";
+      let prankContent = "";
 
-      if (isPornPrank) {
-        analysisText = `<br><br>🔍 We found something online…<br><b>Your hidden crush is a porn star.</b><br>Here’s the link: <a href="https://www.spankbang.com" target="_blank">www.spankbang.com</a>`;
-      } else {
-        const prankMessages = [
-          "🧬 Emotional mismatch detected. Your crush might actually prefer your best friend.",
-          "🕵️‍♀️ Compatibility shows they're already in a relationship… with someone in your friend list.",
-          "💀 Love forecast: You two would break up in under 3 weeks."
-        ];
-        const randomMsg = prankMessages[Math.floor(Math.random() * prankMessages.length)];
-        analysisText = `<br><br><i>AI Deep Analysis:</i><br>${randomMsg}`;
+      // Roll for GAY prank (random true/false)
+      if (Math.random() < 0.5) {
+        prankContent += `<br><br>💔 <b>Secret truth:</b> The person you like is actually a <b>GAY!!!</b>`;
       }
 
-      resultDiv.innerHTML += analysisText;
+      // Roll for porn star prank
+      if (Math.random() < 0.5) {
+        prankContent += `<br><br>🔞 We found something online...<br>Your hidden crush is a porn star.<br>Here’s the link: <a href="https://www.spankbang.com" target="_blank">www.spankbang.com</a>`;
+      }
+
+      // Roll for AI deep analysis
+      if (Math.random() < 0.5) {
+        const aiMessages = [
+          "🧬 Emotional mismatch detected. You're more like besties than lovers.",
+          "🕵️‍♀️ Social media scraping complete – they're into someone else.",
+          "📉 Love forecast: You’ll be ghosted in under a week.",
+          "😬 Zodiac analysis: You're the worst possible match astrologically."
+        ];
+        const msg = aiMessages[Math.floor(Math.random() * aiMessages.length)];
+        prankContent += `<br><br><i>AI Deep Analysis:</i><br>${msg}`;
+      }
+
+      // Inject prank content (if any)
+      if (prankContent !== "") {
+        resultDiv.innerHTML += prankContent;
+      }
     }, 2000);
 
-    // Send data to Google Sheet
+    // Send to Google Sheets
     const formData = new URLSearchParams();
     formData.append("yourName", yourName);
     formData.append("crushName", crushName);
@@ -124,6 +122,7 @@
     .catch(err => console.error("❌ Logging failed:", err));
   });
 </script>
+
 
 
 
