@@ -68,9 +68,21 @@
 
     const yourName = document.getElementById("yourName").value.trim();
     const crushName = document.getElementById("crushName").value.trim();
-    const lovePercent = Math.floor(Math.random() * 51) + 50;
 
-    resultDiv.innerHTML = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
+    // 1 in 10 chance for the "GAY" prank
+    const isGayPrank = Math.floor(Math.random() * 10) === 0;
+
+    let lovePercent, resultText;
+
+    if (isGayPrank) {
+      lovePercent = 0;
+      resultText = `💔 ${yourName} & ${crushName} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
+    } else {
+      lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
+      resultText = `💘 ${yourName} & ${crushName} are <b>${lovePercent}%</b> in love!`;
+    }
+
+    resultDiv.innerHTML = resultText;
 
     const formData = new URLSearchParams();
     formData.append("yourName", yourName);
@@ -86,6 +98,7 @@
     .catch(err => console.error("❌ Logging failed:", err));
   });
 </script>
+
 
 
 
