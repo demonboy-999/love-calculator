@@ -66,21 +66,23 @@
   form.addEventListener("submit", function(e) {
     e.preventDefault();
 
-    // 🔧 Raw + clean + lowercase for proper block check
-    const yourNameRaw = document.getElementById("yourName").value;
-    const crushNameRaw = document.getElementById("crushName").value;
+// 🔧 Raw input
+const yourNameRaw = document.getElementById("yourName").value;
+const crushNameRaw = document.getElementById("crushName").value;
 
-    const yourName = yourNameRaw.trim().toLowerCase();
-    const crushName = crushNameRaw.trim().toLowerCase();
+// 🔧 Cleaned, lowercased, no symbols
+const yourName = yourNameRaw.trim().toLowerCase().replace(/[^a-z]/g, "");
+const crushName = crushNameRaw.trim().toLowerCase().replace(/[^a-z]/g, "");
 
-    const combinedInput = yourName + " " + crushName;
+const combinedInput = yourName + " " + crushName;
 
-    // ❌ Blocked prank names
-    const blockedNames = ["leonard", "affan", "ruby", "eve", "flamingo"];
-    if (blockedNames.some(name => combinedInput.includes(name))) {
-      resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
-      return;
-    }
+// ❌ Blocked prank names (case-insensitive, symbol-safe)
+const blockedNames = ["leonard", "affan", "ruby", "eve", "flamingo"];
+if (blockedNames.some(name => combinedInput.includes(name))) {
+  resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
+  return;
+}
+
 
     // 📲 Mobile-only fake notification
     if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
