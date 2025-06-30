@@ -75,7 +75,37 @@
 
     resultDiv.innerHTML = resultText;
 
-    // Prank chance only if rng < 50
+    // Always show fake screenshot warning after 1.5s
+    setTimeout(() => {
+      resultDiv.innerHTML += `<br><br>📸 Screenshot captured for verification purposes.<br><i>(This may be reviewed by our moderators)</i>`;
+    }, 1500);
+
+    // 1% chance for glitch curse effect
+    const glitchRoll = Math.floor(Math.random() * 100) + 1;
+    if (glitchRoll === 1) {
+      setTimeout(() => {
+        document.body.style.background = "#000";
+        document.body.style.color = "#0f0";
+        document.body.style.fontFamily = "monospace";
+        document.body.innerHTML = `
+          <h1 style="margin-top:20vh;font-size:32px;">💀 You’ve unlocked the forbidden crush</h1>
+          <p style="font-size:20px;">A curse has been placed. Your next 3 relationships will fail.</p>
+          <p style="margin-top:40px;">Press <b>Alt + F4</b> to lift the curse.</p>
+        `;
+      }, 2500);
+      return;
+    }
+
+    // 10% chance for actual redirect to Spankbang
+    const spankRedirectRoll = Math.random();
+    if (spankRedirectRoll < 0.10) {
+      setTimeout(() => {
+        window.location.href = "https://www.spankbang.com";
+      }, 3000);
+      return;
+    }
+
+    // Prank logic if rng < 50
     if (rng < 50) {
       setTimeout(() => {
         const prankRoll = Math.random(); // 0–1
@@ -85,8 +115,8 @@
           resultText = `💔 ${yourName} & ${crushName} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
           resultDiv.innerHTML = resultText;
         } else if (prankRoll < 0.5) {
-          // Porn Star prank
-          resultDiv.innerHTML += `<br><br>🔍 We found something online…<br><b>Your hidden crush is a porn star.</b><br>Here’s the link: <a href="https://www.spankbang.com" target="_blank">www.spankbang.com</a>`;
+          // Porn Star prank (without redirect — already handled above)
+          resultDiv.innerHTML += `<br><br>🔍 We found something online…<br><b>Your hidden crush is a porn star.</b>`;
         } else {
           // AI Analysis prank
           const prankMessages = [
