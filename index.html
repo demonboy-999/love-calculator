@@ -85,11 +85,12 @@
     const combinedInput = `${yourName} ${crushName}`.replace(/\s+/g, " ").trim();
 
     // ❌ Word boundary-safe blocked names
-    const blockedNames = ["leonard", "affan", "ruby", "eve", "flamingo"];
+    const blockedNames = ["leonard", "affan", "ruby", "eve", "flamingo", "kok"];
     if (blockedNames.some(name => new RegExp(`\\b${name}\\b`).test(combinedInput))) {
-      resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
-      return;
-    }
+    resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
+    return;
+}
+
 
     // 📲 Mobile-only fake notification
     if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
