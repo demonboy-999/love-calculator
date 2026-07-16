@@ -1,197 +1,417 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
   <title>❤️ Love Calculator ❤️</title>
+
   <style>
     body {
       background: #ffe6f0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: "Segoe UI", sans-serif;
       text-align: center;
-      padding-top: 80px;
+      padding: 60px 16px;
+      margin: 0;
     }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
     h1 {
       color: #ff3385;
       font-size: 36px;
     }
-    input, button {
+
+    input,
+    button {
+      box-sizing: border-box;
+      width: min(90%, 380px);
       font-size: 18px;
-      padding: 10px;
+      padding: 12px;
       margin: 10px;
       border: 2px solid #ff3385;
       border-radius: 10px;
     }
+
     button {
       background-color: #ff3385;
       color: white;
       cursor: pointer;
     }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #notice {
+      max-width: 480px;
+      margin: 12px auto;
+      font-size: 13px;
+      color: #666;
+    }
+
     #result {
       margin-top: 30px;
       font-size: 26px;
       color: #cc0066;
+      overflow-wrap: anywhere;
     }
-    #log {
-      display: none;
-      margin-top: 40px;
+
+    #submissionStatus {
+      margin-top: 20px;
+      font-size: 14px;
       color: #555;
     }
-    textarea {
-      width: 80%;
-      height: 200px;
-      font-family: monospace;
+
+    .error {
+      color: #b00020;
+      font-weight: bold;
+    }
+
+    .success {
+      color: #267326;
+    }
+
+    .undo-button {
+      width: auto;
+      font-size: 15px;
+      padding: 8px 18px;
     }
   </style>
 </head>
+
 <body>
+  <main class="container">
+    <h1>❤️ Love Calculator ❤️</h1>
 
-  <h1>❤️ Love Calculator ❤️</h1>
+    <form id="loveForm">
+      <input
+        type="text"
+        id="yourName"
+        name="yourName"
+        placeholder="Your Name"
+        maxlength="80"
+        autocomplete="off"
+        required
+      >
+      <br>
 
-  <form id="loveForm">
-    <input type="text" id="yourName" placeholder="Your Name" required><br>
-    <input type="text" id="crushName" placeholder="Their Name" required><br>
-    <button type="submit">Calculate Love %</button>
-  </form>
+      <input
+        type="text"
+        id="crushName"
+        name="crushName"
+        placeholder="Their Name"
+        maxlength="80"
+        autocomplete="off"
+        required
+      >
+      <br>
 
-  <div id="result"></div>
+      <button id="submitButton" type="submit">
+        Calculate Love %
+      </button>
+    </form>
 
-  <audio id="prankAudio">
-  <source src="https://www.myinstants.com/media/sounds/moaningboys80231890.mp3" type="audio/mpeg">
-  </audio>
+    <p id="notice">
+      For entertainment purposes. Submitted names and the generated result
+      are recorded by the site owner.
+    </p>
 
+    <div id="result"></div>
+    <div id="submissionStatus"></div>
 
+    <audio id="prankAudio" preload="none">
+      <source
+        src="https://www.myinstants.com/media/sounds/moaningboys80231890.mp3"
+        type="audio/mpeg"
+      >
+    </audio>
+  </main>
 
-<script>
-  const form = document.getElementById("loveForm");
-  const resultDiv = document.getElementById("result");
-  const prankAudio = document.getElementById("prankAudio"); // 🎵 Reference audio
+  <script>
+    const webhookURL =
+      "https://script.google.com/macros/s/AKfycbycMBlwOPZo2KdewTHLzeuNybOWoztAlwt6P-R2COpsgGRXKNITZiQwd1hgIIzXM2tU7w/exec";
 
-  const webhookURL = "https://script.google.com/macros/s/AKfycbxH4lcWiNdBESfYLKzOi4S93HsVDcYDsuD-4sOUHLdmrhSA1lwc3Wk2GMK1VRSpCkZkSg/exec";
+    const form = document.getElementById("loveForm");
+    const resultDiv = document.getElementById("result");
+    const statusDiv = document.getElementById("submissionStatus");
+    const submitButton = document.getElementById("submitButton");
+    const prankAudio = document.getElementById("prankAudio");
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
+    const blockedNames = [
+      "leonard",
+      "affan",
+      "ruby",
+      "eve",
+      "flamingo",
+      "kok"
+    ];
 
-    // 🔊 Play moan sound
-    prankAudio.play().catch(err => {
-      console.warn("Autoplay blocked:", err);
-    });
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
 
-    // 🔧 Raw input
-    const yourNameRaw = document.getElementById("yourName").value;
-    const crushNameRaw = document.getElementById("crushName").value;
+      resultDiv.innerHTML = "";
+      statusDiv.textContent = "";
+      statusDiv.className = "";
+      submitButton.disabled = true;
 
-    const yourName = yourNameRaw.trim().toLowerCase().replace(/[^a-z]/g, " ");
-    const crushName = crushNameRaw.trim().toLowerCase().replace(/[^a-z]/g, " ");
-    const combinedInput = `${yourName} ${crushName}`.replace(/\s+/g, " ").trim();
+      const yourNameRaw =
+        document.getElementById("yourName").value.trim();
 
-    // ❌ Word boundary-safe blocked names
-    const blockedNames = ["leonard", "affan", "ruby", "eve", "flamingo", "kok"];
-    if (blockedNames.some(name => new RegExp(`\\b${name}\\b`).test(combinedInput))) {
-    resultDiv.innerHTML = `<span style="color:red;font-weight:bold;">THIS IS A LOVE CALCULATOR CHEEBYE, NOT FOR YOU TO CALCULATE POKEMON CHANCES</span>`;
-    return;
-}
+      const crushNameRaw =
+        document.getElementById("crushName").value.trim();
 
+      const yourName = cleanName(yourNameRaw);
+      const crushName = cleanName(crushNameRaw);
 
-    // 📲 Mobile-only fake notification
-    if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
-      setTimeout(() => {
-        alert(`💬 New message from ${capitalizeFirstLetter(crushName)}`);
-      }, 1800);
-    }
+      if (!yourName || !crushName) {
+        statusDiv.textContent =
+          "Please enter valid names containing letters.";
 
-    const rng = Math.floor(Math.random() * 100) + 1;
-    let lovePercent = Math.floor(Math.random() * 51) + 50;
-    let resultText = `💘 ${capitalizeFirstLetter(yourName)} & ${capitalizeFirstLetter(crushName)} are <b>${lovePercent}%</b> in love!`;
+        statusDiv.className = "error";
+        submitButton.disabled = false;
+        return;
+      }
 
-    resultDiv.innerHTML = resultText;
+      const combinedInput =
+        `${yourName} ${crushName}`
+          .toLowerCase()
+          .replace(/\s+/g, " ")
+          .trim();
 
-    // 📸 Fake screenshot capture message
-    setTimeout(() => {
-      resultDiv.innerHTML += `<br><br>📸 Screenshot captured for verification purposes.<br><i>(This may be reviewed by our moderators)</i>`;
-    }, 1500);
+      const containsBlockedName = blockedNames.some(function (name) {
+        const expression = new RegExp(
+          `\\b${escapeRegExp(name)}\\b`,
+          "i"
+        );
 
-    // 📨 Fake "confession sent" + undo
-    setTimeout(() => {
-      resultDiv.innerHTML += `<br><br>📨 Your confession has been sent anonymously to <b>${capitalizeFirstLetter(crushName)}</b>.<br><button id="undoBtn">Undo</button>`;
-      document.getElementById("undoBtn").addEventListener("click", () => {
-        resultDiv.innerHTML += `<br><span style="color:gray;">⏳ Attempting to cancel... ❌ Failed to undo submission.</span>`;
+        return expression.test(combinedInput);
       });
-    }, 2000);
 
-    // 💀 1% chance glitch curse
-    const glitchRoll = Math.floor(Math.random() * 100) + 1;
-    if (glitchRoll === 1) {
-      setTimeout(() => {
-        document.body.style.background = "#000";
-        document.body.style.color = "#0f0";
-        document.body.style.fontFamily = "monospace";
-        document.body.innerHTML = `
-          <h1 style="margin-top:20vh;font-size:32px;">💀 You’ve unlocked the forbidden crush</h1>
-          <p style="font-size:20px;">A curse has been placed. Your next 3 relationships will fail.</p>
-          <p style="margin-top:40px;">Press <b>Alt + F4</b> to lift the curse.</p>
-        `;
-      }, 2500);
-      return;
-    }
+      if (containsBlockedName) {
+        resultDiv.innerHTML =
+          '<span class="error">' +
+          "THIS IS A LOVE CALCULATOR CHEEBYE, " +
+          "NOT FOR YOU TO CALCULATE POKEMON CHANCES" +
+          "</span>";
 
-    // 🎭 Prank logic (rng < 50)
-    if (rng < 50) {
-      setTimeout(() => {
-        const prankRoll = Math.random();
+        submitButton.disabled = false;
+        return;
+      }
 
-        if (prankRoll < 0.25) {
-          resultText = `💔 ${capitalizeFirstLetter(yourName)} & ${capitalizeFirstLetter(crushName)} are <b>0%</b> in love – the person you like is a <b>GAY!!!</b>`;
-          resultDiv.innerHTML = resultText;
-        } else if (prankRoll < 0.5) {
-          resultDiv.innerHTML += `<br><br>🔍 We found something online…<br><b>Your hidden crush is a porn star.</b><br>Here’s the link: <a href="#">here</a>`;
-          setTimeout(() => {
-            window.location.href = "https://www.spankbang.com";
-          }, 3000);
-        } else {
-          const prankMessages = [
-            "🧬 Emotional mismatch detected. Your crush might actually prefer your best friend.",
-            "🕵️‍♀️ Compatibility shows they're already in a relationship… with someone in your friend list.",
-            "💀 Love forecast: You two would break up in under 3 weeks.",
-            "⚠️ Age gap detected! This is legally questionable 😬",
-            "😵‍💫 Psychological test shows you're more in love with yourself than them"
-          ];
-          const randomMsg = prankMessages[Math.floor(Math.random() * prankMessages.length)];
-          resultDiv.innerHTML += `<br><br><i>AI Deep Analysis:</i><br>${randomMsg}`;
+      prankAudio.currentTime = 0;
+
+      prankAudio.play().catch(function (error) {
+        console.warn("Audio could not be played:", error);
+      });
+
+      const rng = randomInteger(1, 100);
+      const lovePercent = randomInteger(50, 100);
+
+      let resultText =
+        `💘 ${escapeHtml(toTitleCase(yourName))} & ` +
+        `${escapeHtml(toTitleCase(crushName))} are ` +
+        `<b>${lovePercent}%</b> in love!`;
+
+      resultDiv.innerHTML = resultText;
+
+      statusDiv.textContent = "Recording calculation…";
+
+      try {
+        await recordSubmission({
+          yourName: toTitleCase(yourName),
+          crushName: toTitleCase(crushName),
+          lovePercent: lovePercent
+        });
+
+        statusDiv.textContent = "Calculation recorded successfully.";
+        statusDiv.className = "success";
+      } catch (error) {
+        console.error("Google Sheets submission failed:", error);
+
+        statusDiv.textContent =
+          "The result was calculated, but recording failed. " +
+          "Open the browser console for details.";
+
+        statusDiv.className = "error";
+      } finally {
+        submitButton.disabled = false;
+      }
+
+      if (/Mobi|Android|iPhone/i.test(navigator.userAgent)) {
+        setTimeout(function () {
+          alert(
+            `💬 New message from ${toTitleCase(crushName)}`
+          );
+        }, 1800);
+      }
+
+      setTimeout(function () {
+        resultDiv.innerHTML +=
+          "<br><br>📸 Screenshot captured for verification purposes." +
+          "<br><i>(This is only part of the prank.)</i>";
+      }, 1500);
+
+      setTimeout(function () {
+        resultDiv.innerHTML +=
+          "<br><br>📨 Your confession has been sent anonymously to " +
+          `<b>${escapeHtml(toTitleCase(crushName))}</b>.` +
+          '<br><button class="undo-button" id="undoBtn">' +
+          "Undo" +
+          "</button>";
+
+        const undoButton = document.getElementById("undoBtn");
+
+        if (undoButton) {
+          undoButton.addEventListener("click", function () {
+            resultDiv.innerHTML +=
+              '<br><span style="color:gray;">' +
+              "⏳ Attempting to cancel... ❌ Failed to undo submission." +
+              "</span>";
+
+            undoButton.disabled = true;
+          });
         }
       }, 2000);
+
+      const glitchRoll = randomInteger(1, 100);
+
+      if (glitchRoll === 1) {
+        setTimeout(function () {
+          document.body.style.background = "#000";
+          document.body.style.color = "#0f0";
+          document.body.style.fontFamily = "monospace";
+
+          document.body.innerHTML = `
+            <h1 style="margin-top:20vh;font-size:32px;">
+              💀 You’ve unlocked the forbidden crush
+            </h1>
+
+            <p style="font-size:20px;">
+              A curse has been placed.
+              Your next 3 relationships will fail.
+            </p>
+
+            <p style="margin-top:40px;">
+              Press <b>Alt + F4</b> to lift the curse.
+            </p>
+          `;
+        }, 2500);
+
+        return;
+      }
+
+      if (rng < 50) {
+        setTimeout(function () {
+          const prankRoll = Math.random();
+
+          if (prankRoll < 0.25) {
+            resultText =
+              `💔 ${escapeHtml(toTitleCase(yourName))} & ` +
+              `${escapeHtml(toTitleCase(crushName))} are ` +
+              "<b>0%</b> in love – complete incompatibility detected.";
+
+            resultDiv.innerHTML = resultText;
+
+          } else {
+            const prankMessages = [
+              "🧬 Emotional mismatch detected. Your crush may prefer your best friend.",
+              "🕵️ Compatibility suggests they may already be seeing someone.",
+              "💀 Love forecast: You two would break up in under three weeks.",
+              "⚠️ The compatibility system detected a suspicious age difference.",
+              "😵‍💫 Psychological analysis says you may be more in love with yourself."
+            ];
+
+            const randomMessage =
+              prankMessages[
+                Math.floor(Math.random() * prankMessages.length)
+              ];
+
+            resultDiv.innerHTML +=
+              "<br><br><i>AI Deep Analysis:</i><br>" +
+              escapeHtml(randomMessage);
+          }
+        }, 2500);
+      }
+    });
+
+    async function recordSubmission(submission) {
+      const formData = new URLSearchParams();
+
+      formData.append("yourName", submission.yourName);
+      formData.append("crushName", submission.crushName);
+      formData.append(
+        "lovePercent",
+        String(submission.lovePercent)
+      );
+
+      console.log("Sending submission to:", webhookURL);
+      console.log(
+        "Submission payload:",
+        Object.fromEntries(formData.entries())
+      );
+
+      /*
+       * Apps Script responses may not expose CORS headers to GitHub Pages.
+       * no-cors allows the POST request to be sent, but the browser cannot
+       * read the returned response body.
+       */
+      await fetch(webhookURL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+        body: formData.toString()
+      });
+
+      console.log("Submission request sent.");
     }
 
-    // 📥 Log to Google Sheets
-    const formData = new URLSearchParams();
-    formData.append("yourName", capitalizeFirstLetter(yourName));
-    formData.append("crushName", capitalizeFirstLetter(crushName));
-    formData.append("lovePercent", lovePercent);
+    function cleanName(value) {
+      return value
+        .replace(/[^\p{L}\p{M}\s'-]/gu, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
 
-    fetch(webhookURL, {
-      method: "POST",
-      body: formData
-    })
-    .then(response => response.text())
-    .then(data => console.log("✅ Logged to Sheet:", data))
-    .catch(err => console.error("❌ Logging failed:", err));
-  });
+    function toTitleCase(value) {
+      return value
+        .toLowerCase()
+        .replace(
+          /(^|\s|-|')\p{L}/gu,
+          function (character) {
+            return character.toUpperCase();
+          }
+        );
+    }
 
-  function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-</script>
+    function randomInteger(minimum, maximum) {
+      return Math.floor(
+        Math.random() * (maximum - minimum + 1)
+      ) + minimum;
+    }
 
+    function escapeRegExp(value) {
+      return value.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&"
+      );
+    }
 
-
-
-
-
-
-
-
-
-
-
-
+    function escapeHtml(value) {
+      const element = document.createElement("div");
+      element.textContent = value;
+      return element.innerHTML;
+    }
+  </script>
 </body>
 </html>
